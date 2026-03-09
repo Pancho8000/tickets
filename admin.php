@@ -102,6 +102,16 @@ $result = $conn->query($query);
                                                                     <p><strong>Descripción Completa:</strong></p>
                                                                     <p class="bg-light p-2 border rounded"><?php echo nl2br(htmlspecialchars($row['description'])); ?></p>
                                                                     
+                                                                    <?php if (!empty($row['solution_notes'])): ?>
+                                                                    <p><strong>Notas de Resolución:</strong></p>
+                                                                    <p class="bg-info bg-opacity-10 p-2 border rounded"><?php echo nl2br(htmlspecialchars($row['solution_notes'])); ?></p>
+                                                                    <?php endif; ?>
+                                                                    
+                                                                    <div class="mb-3">
+                                                                        <label for="solution_notes" class="form-label">Notas de Resolución / Acciones Tomadas:</label>
+                                                                        <textarea class="form-control" name="solution_notes" rows="3" placeholder="Detalla qué se hizo para solucionar el problema..."><?php echo htmlspecialchars($row['solution_notes'] ?? ''); ?></textarea>
+                                                                    </div>
+                                                                    
                                                                     <div class="mb-3">
                                                                         <label for="status" class="form-label">Cambiar Estado:</label>
                                                                         <select class="form-select" name="status">
