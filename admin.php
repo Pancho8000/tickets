@@ -137,6 +137,63 @@ $result = $conn->query($query);
     </div>
 </div>
 
+<script>
+    // Sistema de Notificaciones en Tiempo Real
+    let lastKnownTicketId = 0;
+    
+    // Obtener el ID inicial al cargar la página
+    fetch('check_latest_ticket.php')
+        .then(response => response.json())
+        .then(data => {
+            lastKnownTicketId = parseInt(data.last_id);
+            console.log("ID Inicial: " + lastKnownTicketId);
+        });
+
+    // Solicitar permiso para notificaciones
+    if (Notification.permission !== "granted") {
+        Notification.requestPermission();
+    }
+
+    // Función para revisar nuevos tickets cada 10 segundos
+    setInterval(checkForNewTickets, 10000);
+
+    function checkForNewTickets() {
+        fetch('check_latest_ticket.php')
+            .then(response => response.json())
+            .then(data => {
+                const currentId = parseInt(data.last_id);
+                
+                if (currentId > lastKnownTicketId) {
+                    // ¡Hay un nuevo ticket!
+                    showNotification(currentId);
+                    lastKnownTicketId = currentId;
+                    
+                    // Opcional: Recargar la página automáticamente
+                    // location.reload(); 
+                }
+            })
+            .catch(error => console.error('Error verificando tickets:', error));
+    }
+
+    function showNotification(ticketId) {
+        if (Notification.permission === "granted") {
+            const notification = new Notification("¡Nuevo Ticket Recibido!", {
+                body: "Se ha registrado el ticket #" + ticketId + ". Revisa el panel.",
+                icon: "https://cdn-icons-png.flaticon.com/512/1067/1067566.png" // Icono genérico de ticket
+            });
+            
+            notification.onclick = function() {
+                window.focus();
+                location.reload(); // Recargar para ver el nuevo ticket
+            };
+            
+            // Reproducir sonido de notificación (opcional)
+            const audio = new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg');
+            audio.play().catch(e => console.log("Audio bloqueado por el navegador"));
+        }
+    }
+</script>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
